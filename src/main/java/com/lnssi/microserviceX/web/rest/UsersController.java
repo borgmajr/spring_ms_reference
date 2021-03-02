@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,22 +31,25 @@ public class UsersController {
 	@Autowired
 	private RoleService roleService;
 
-	@GetMapping("/users")
+	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "','" + Role.USER + "')")
+	@GetMapping("/rest/users")
 	public List<User> getUserList() {
 		return userService.findAll();
 	}
 
-	@GetMapping("/users/{userId}")
+	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
+	@GetMapping("/rest/users/{userId}")
 	public User getUser(@PathVariable(value = "userId") Long userId) {
-		User user =  userService.findById(userId)
+		User user = userService.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("userId " + userId + " not found"));
-		
+
 		user.setRoles(roleService.getRolesForUser(user.getId()));
-		
+
 		return user;
 	}
 
-	@PostMapping("/users")
+	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
+	@PostMapping("/rest/users")
 	public String createUser(@RequestBody User user) {
 		user = userService.save(user);
 
@@ -60,7 +64,8 @@ public class UsersController {
 		return "User added";
 	}
 
-	@PutMapping("/users/{userId}")
+	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
+	@PutMapping("/rest/users/{userId}")
 	public String updateUser(@PathVariable(value = "userId") Long userId, @RequestBody User user) {
 		return userService.findById(userId).map(mappedUser -> {
 			mappedUser.setEmail(user.getEmail());
@@ -79,10 +84,11 @@ public class UsersController {
 		}).orElseThrow(() -> new ResourceNotFoundException("userId " + userId + " not found"));
 	}
 
-	@DeleteMapping("/users/{userId}")
+	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
+	@DeleteMapping("/rest/users/{userId}")
 	public String deleteUser(@PathVariable(value = "userId") Long userId) {
 		return userService.findById(userId).map(p -> {
-			userService.deleteById(userId);
+			userService.deleteById(p.getId());
 			return "User deleted";
 		}).orElseThrow(() -> new ResourceNotFoundException("userId " + userId + " not found"));
 	}
