@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head lang="en">
 <meta charset="UTF-8" />
@@ -10,8 +11,23 @@
 <body>
 
 	<div>Microservice X home page for Web access</div>
-
+	<br />
 	<div>Can be used for debugging, monitoring, etc....</div>
+	<br />
+	<div>
+		<div sec:authorize="isAuthenticated()">
+			Authenticated as <span sec:authentication="name"></span>
+		</div>
+		<div sec:authorize="isAuthenticated()">
+			Roles: <span sec:authentication="principal.authorities"></span>
+		</div>
+	</div>
+
+	<div>
+		<a href="#" th:href="@{/logout}">Logout</a>
+	</div>
+
+
 
 </body>
 
