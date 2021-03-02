@@ -16,6 +16,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lnssi.microserviceX.model.security.Role;
@@ -72,9 +74,11 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 			var userRole = createRoleIfNotFound(Role.ROLE_USER);
 			var adminRole = createRoleIfNotFound(Role.ROLE_ADMIN);
 
+			PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 			// Create users
-			createUserIfNotFound("user", userRole, "user@test.com");
-			createUserIfNotFound("admin", adminRole, "admin@test.com");
+			createUserIfNotFound("user", passwordEncoder.encode("user"), userRole, "user@test.com");
+			createUserIfNotFound("admin", passwordEncoder.encode("admin"), adminRole, "admin@test.com");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,10 +104,10 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 	}
 
 	@Transactional
-	private final User createUserIfNotFound(final String name, final Role role, final String email) {
+	private final User createUserIfNotFound(final String name, final String password, final Role role, final String email) {
 		Optional<User> user = userService.findByUserName(name);
 		if (user.isEmpty()) {
-			User newUser = new User(name, "$2a$04$KNLUwOWHVQZVpXyMBNc7JOzbLiBjb9Tk9bP7KNcPI12ICuvzXQQKG", email);
+			User newUser = new User(name, password, email);
 			newUser = userService.save(newUser);
 			
 			roleService.removeAllRolesFromUser(newUser.getId());
