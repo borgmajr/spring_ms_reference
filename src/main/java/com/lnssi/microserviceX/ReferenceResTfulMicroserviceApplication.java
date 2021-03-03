@@ -93,6 +93,9 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 	private final Role createRoleIfNotFound(final String name) {
 		Optional<Role> role = roleService.findByName(name);
 		if (role.isEmpty()) {
+			
+			System.out.println(">>> CREATING ROLE: " + name);
+			
 			Role newRole = new Role(name);
 			newRole = roleService.save(newRole);
 
@@ -104,10 +107,12 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 	}
 
 	@Transactional
-	private final User createUserIfNotFound(final String name, final String password, final Role role,
-			final String email) {
+	private final User createUserIfNotFound(final String name, final String password, final Role role, final String email) {
 		Optional<User> user = userService.findByUserName(name);
 		if (user.isEmpty()) {
+
+			System.out.println(">>> CREATING USER: " + name);
+
 			User newUser = new User(name, password, email);
 			newUser = userService.save(newUser);
 
