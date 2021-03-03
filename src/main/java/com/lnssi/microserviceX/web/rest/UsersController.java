@@ -66,7 +66,7 @@ public class UsersController {
 
 	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
 	@PutMapping("/rest/users/{userId}")
-	public String updateUser(@PathVariable(value = "userId") Long userId, @RequestBody User user) {
+	public User updateUser(@PathVariable(value = "userId") Long userId, @RequestBody User user) {
 		return userService.findById(userId).map(mappedUser -> {
 			mappedUser.setEmail(user.getEmail());
 			mappedUser.setRoles(user.getRoles());
@@ -80,7 +80,7 @@ public class UsersController {
 				}
 			}
 
-			return "User updated";
+			return mappedUser;
 		}).orElseThrow(() -> new ResourceNotFoundException("userId " + userId + " not found"));
 	}
 
@@ -89,7 +89,7 @@ public class UsersController {
 	public String deleteUser(@PathVariable(value = "userId") Long userId) {
 		return userService.findById(userId).map(p -> {
 			userService.deleteById(p.getId());
-			return "User deleted";
+			return "{\"result\" : \"delete success\"}";
 		}).orElseThrow(() -> new ResourceNotFoundException("userId " + userId + " not found"));
 	}
 }
