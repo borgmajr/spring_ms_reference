@@ -71,14 +71,14 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 			// "$2a$04$KNLUwOWHVQZVpXyMBNc7JOzbLiBjb9Tk9bP7KNcPI12ICuvzXQQKG","admin@test.com"));
 
 			// Create user roles
-			var userRole = createRoleIfNotFound(Role.ROLE_USER);
 			var adminRole = createRoleIfNotFound(Role.ROLE_ADMIN);
+			var userRole = createRoleIfNotFound(Role.ROLE_USER);
 
 			PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 			// Create users
-			createUserIfNotFound("user", passwordEncoder.encode("user"), userRole, "user@test.com");
 			createUserIfNotFound("admin", passwordEncoder.encode("admin"), adminRole, "admin@test.com");
+			createUserIfNotFound("user", passwordEncoder.encode("user"), userRole, "user@test.com");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,12 +104,13 @@ public class ReferenceResTfulMicroserviceApplication implements CommandLineRunne
 	}
 
 	@Transactional
-	private final User createUserIfNotFound(final String name, final String password, final Role role, final String email) {
+	private final User createUserIfNotFound(final String name, final String password, final Role role,
+			final String email) {
 		Optional<User> user = userService.findByUserName(name);
 		if (user.isEmpty()) {
 			User newUser = new User(name, password, email);
 			newUser = userService.save(newUser);
-			
+
 			roleService.removeAllRolesFromUser(newUser.getId());
 			roleService.addRoleToUser(newUser.getId(), role);
 			newUser.setRoles(Set.of(role));

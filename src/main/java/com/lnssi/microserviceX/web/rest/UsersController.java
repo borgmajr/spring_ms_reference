@@ -50,7 +50,7 @@ public class UsersController {
 
 	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
 	@PostMapping("/rest/users")
-	public String createUser(@RequestBody User user) {
+	public User createUser(@RequestBody User user) {
 		user = userService.save(user);
 
 		if (null != user.getRoles()) {
@@ -61,7 +61,7 @@ public class UsersController {
 			}
 		}
 
-		return "User added";
+		return user;
 	}
 
 	@PreAuthorize("hasAnyRole('" + Role.ADMIN + "')")
