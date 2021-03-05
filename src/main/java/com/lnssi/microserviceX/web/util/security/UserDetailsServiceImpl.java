@@ -33,8 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		User user = userService.findByUserName(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User: " + username + " not found"));
 
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-				buildSimpleGrantedAuthorities(user.getId()));
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), buildSimpleGrantedAuthorities(user.getId()));
 
 	}
 

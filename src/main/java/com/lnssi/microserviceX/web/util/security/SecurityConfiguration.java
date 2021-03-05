@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 	//.antMatchers(HttpMethod.DELETE).hasRole(Role.ADMIN)
                 // any authenticated user can perform all other operations
-                	//.antMatchers("/rest/**").hasAnyRole(Role.ADMIN, Role.USER)
+                	.antMatchers("/").hasAnyRole(Role.ADMIN)
                 	.antMatchers("/swagger-ui/**").hasAnyRole(Role.ADMIN).and().httpBasic()
                 // Permit all other request without authentication
                 .and().authorizeRequests().anyRequest().permitAll()
